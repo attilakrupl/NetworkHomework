@@ -10,6 +10,12 @@ namespace nProtocol
 {
     class Server : public aSocket
     {
+    private:
+        static constexpr int kNumerOfConnections = 3;               /*! The maximum number of node connections */
+
+    private:
+        std::array<SOCKET, kNumerOfConnections> mNodeContainer;     /*! The node/connection container          */
+
     public:
         Server();
         ~Server();

@@ -8,8 +8,6 @@
 
 using namespace nProtocol;
 
-static constexpr int kNumerOfConnections = 3;       /*! The maximum number of connections */
-
 Server::Server()
 {
              mTCPEndpointAddress.sin_family    = AF_INET;

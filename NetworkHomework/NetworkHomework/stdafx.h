@@ -14,6 +14,7 @@
 #endif // WIN32
 
 #include <iostream>
+#include <array>
 
 #include "types/asocket.h"
 #include "types/server.h"
