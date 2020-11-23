@@ -11,10 +11,14 @@ namespace nProtocol
     class Server : public aSocket
     {
     private:
-        static constexpr int kNumerOfConnections = 3;               /*! The maximum number of node connections */
+        static constexpr int kNumerOfConnections = 3;                       /*! The maximum number of node connections           */
 
     private:
-        std::array<SOCKET, kNumerOfConnections> mNodeContainer;     /*! The node/connection container          */
+        using ConnectionArray = std::array<SOCKET, kNumerOfConnections>;    /*! The connection container alias                   */
+
+    private:
+        int             mNumberOfConnections;                               /*! The current total number of existing connections */
+        ConnectionArray mNodeContainer;                                     /*! The node/connection container                    */
 
     public:
         Server();
@@ -23,7 +27,7 @@ namespace nProtocol
     public:
         virtual void Bind()     override;
         virtual void Listen()   override;
-        virtual void Accept()   override;
+        virtual void Accept( SOCKADDR* aTCPClientAddress, int* aTCPClientAddressLength )   override;
         virtual void Send()     override;
         virtual void Recieve()  override;
         virtual void Shutdown() override;

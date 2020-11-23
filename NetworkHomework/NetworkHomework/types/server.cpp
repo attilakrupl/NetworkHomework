@@ -9,6 +9,7 @@
 using namespace nProtocol;
 
 Server::Server()
+    : mNumberOfConnections( 0 )
 {
              mTCPEndpointAddress.sin_family    = AF_INET;
              mTCPEndpointAddress.sin_port      = htons( 1985 );
@@ -46,9 +47,15 @@ void Server::Listen()
     std::cout << "SUCCESS - Listening started successfully!" << std::endl;
 }
 
-void Server::Accept()
+void Server::Accept( SOCKADDR* aTCPClientAddress, int* aTCPClientAddressLength )
 {
-
+    SOCKET lAcceptedSocket = accept( mTCPSocket, aTCPClientAddress, aTCPClientAddressLength );
+    if ( lAcceptedSocket == INVALID_SOCKET )
+    {
+        std::cout << "ERROR - Accepting client connection failed! Error code: " << WSAGetLastError() << std::endl;
+    }
+    std::cout << "SUCCESS - Accepted client connection successfully!" << std::endl;
+    mNodeContainer.at( mNumberOfConnections++ ) = lAcceptedSocket;
 }
 
 void Server::Send()

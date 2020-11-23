@@ -23,7 +23,7 @@ namespace nProtocol
         virtual void Bind();
         virtual void Listen();
         virtual void Connect();
-        virtual void Accept();
+        virtual void Accept( SOCKADDR* aTCPClientAddress, int* aTCPClientAddressLength );
     public:
         virtual void Send()     = 0;
         virtual void Recieve()  = 0;
