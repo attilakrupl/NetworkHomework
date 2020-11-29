@@ -60,7 +60,19 @@ void Server::Accept( SOCKADDR* aTCPClientAddress, int* aTCPClientAddressLength )
 
 void Server::Send()
 {
-
+    if ( mSendBufferSize != 0 )
+    {
+        int lSendResult;
+        for ( SOCKET& lSocket : mNodeContainer )
+        {
+            lSendResult= send( lSocket, mSendBuffer, mSendBufferSize, 0 );
+            if ( lSendResult == SOCKET_ERROR )
+            {
+                std::cout << "ERROR - Sending failed! Error code: " << WSAGetLastError() << std::endl;
+            }
+            std::cout << "SUCCESS - Sending to  successfully!" << std::endl;
+        }
+    }
 }
 
 void Server::Recieve()

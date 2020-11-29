@@ -20,6 +20,10 @@ namespace nProtocol
         int             mNumberOfConnections;                               /*! The current total number of existing connections */
         ConnectionArray mNodeContainer;                                     /*! The node/connection container                    */
 
+    private:
+        char mSendBuffer[512] = "This is the send buffer!";                 /*! Dummy send buffer      */
+        int  mSendBufferSize  = strlen( mSendBuffer ) + 1;                  /*! Dummy send buffer size */
+
     public:
         Server();
         ~Server();
