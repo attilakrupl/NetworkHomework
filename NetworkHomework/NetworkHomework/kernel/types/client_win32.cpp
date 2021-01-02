@@ -1,7 +1,7 @@
 /*!
- * \file   client.cpp
+ * \file   client_win32.cpp
  * \author Attila Krüpl dr.
- * \date   22/11/2020
+ * \date   29/12/2020
  */
 
 #include "stdafx.h"

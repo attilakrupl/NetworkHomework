@@ -27,5 +27,5 @@ void aSocket::Listen()
 void aSocket::Connect()
 {}
 
-void aSocket::Accept( [[maybe_unused]] SOCKADDR* aTCPClientAddress, int* aTCPClientAddressLength )
+void aSocket::Accept( [[maybe_unused]] SocketAddress_np* aTCPClientAddress, int* aTCPClientAddressLength )
 {}

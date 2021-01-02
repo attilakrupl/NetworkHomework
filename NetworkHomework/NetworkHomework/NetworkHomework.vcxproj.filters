@@ -7,17 +7,29 @@
     <Filter Include="base">
       <UniqueIdentifier>{3b110258-b389-4e98-b43e-03653c2d875a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="kernel">
+      <UniqueIdentifier>{d9df9b0f-6aa7-4cdf-9a47-b3565caf5cd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="kernel\types">
+      <UniqueIdentifier>{9d985141-c7f8-433f-aaeb-13763409f565}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\defines">
+      <UniqueIdentifier>{a519456d-dd2d-460f-844f-aa81cf679350}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="types\asocket.h">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="types\client.h">
-      <Filter>types</Filter>
+    <ClInclude Include="kernel\types\client_win32.h">
+      <Filter>kernel\types</Filter>
     </ClInclude>
-    <ClInclude Include="types\server.h">
-      <Filter>types</Filter>
+    <ClInclude Include="kernel\types\server_win32.h">
+      <Filter>kernel\types</Filter>
+    </ClInclude>
+    <ClInclude Include="base\defines\protocoldefines.h">
+      <Filter>base\defines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -26,11 +38,11 @@
     <ClCompile Include="types\asocket.cpp">
       <Filter>types</Filter>
     </ClCompile>
-    <ClCompile Include="types\client.cpp">
-      <Filter>types</Filter>
+    <ClCompile Include="kernel\types\client_win32.cpp">
+      <Filter>kernel\types</Filter>
     </ClCompile>
-    <ClCompile Include="types\server.cpp">
-      <Filter>types</Filter>
+    <ClCompile Include="kernel\types\server_win32.cpp">
+      <Filter>kernel\types</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

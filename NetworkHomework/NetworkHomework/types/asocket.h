@@ -11,10 +11,10 @@ namespace nProtocol
     class aSocket
     {
     protected:
-        WSADATA     mWinSocketData;
-        sockaddr_in mTCPEndpointAddress;
-        sockaddr_in mTCPClientAddress;
-        SOCKET      mTCPSocket;
+        SocketData_np      mWinSocketData;
+        SocketAddressIn_np mTCPEndpointAddress;
+        SocketAddressIn_np mTCPClientAddress;
+        Socket_np          mTCPSocket;
 
     protected:
         aSocket();
@@ -23,7 +23,7 @@ namespace nProtocol
         virtual void Bind();
         virtual void Listen();
         virtual void Connect();
-        virtual void Accept( SOCKADDR* aTCPClientAddress, int* aTCPClientAddressLength );
+        virtual void Accept( SocketAddress_np* aTCPClientAddress, int* aTCPClientAddressLength );
     public:
         virtual void Send()     = 0;
         virtual void Recieve()  = 0;

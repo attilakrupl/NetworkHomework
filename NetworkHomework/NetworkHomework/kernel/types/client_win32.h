@@ -1,10 +1,11 @@
 /*!
- * \file   client.h
+ * \file   client_win32.h
  * \author Attila Krüpl dr.
- * \date   22/11/2020
+ * \date   29/12/2020
  */
 
 #pragma once
+
 namespace nProtocol
 {
     class Client : public aSocket
