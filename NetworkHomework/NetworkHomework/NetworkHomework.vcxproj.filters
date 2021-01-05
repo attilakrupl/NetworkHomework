@@ -16,6 +16,9 @@
     <Filter Include="base\defines">
       <UniqueIdentifier>{a519456d-dd2d-460f-844f-aa81cf679350}</UniqueIdentifier>
     </Filter>
+    <Filter Include="base\errors">
+      <UniqueIdentifier>{8a9642ab-538c-4486-afec-0aad2a7eb676}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -30,6 +33,9 @@
     </ClInclude>
     <ClInclude Include="base\defines\protocoldefines.h">
       <Filter>base\defines</Filter>
+    </ClInclude>
+    <ClInclude Include="base\errors\protocolerrors.h">
+      <Filter>base\errors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

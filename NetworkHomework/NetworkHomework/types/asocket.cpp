@@ -13,19 +13,7 @@ aSocket::aSocket()
     const int lWSAStartupResult = WSAStartup( MAKEWORD( 2, 2 ), &mWinSocketData );
     if ( lWSAStartupResult )
     {
-        std::cout << "ERROR - Starting up WSA didn't succeed! Error code: " << lWSAStartupResult << std::endl;
+        PROTO_ERROR( eProtocolError::WSAStartupError, "Starting up WSA didn't succeed!", 0 );
     }
-    std::cout << "SUCCESS - Starting up WSA succeeded!" << std::endl;
+    PROTO_INFO( "Starting up WSA succeeded!" );
 }
-
-void aSocket::Bind()
-{}
-
-void aSocket::Listen()
-{}
-
-void aSocket::Connect()
-{}
-
-void aSocket::Accept( [[maybe_unused]] SocketAddress_np* aTCPClientAddress, int* aTCPClientAddressLength )
-{}

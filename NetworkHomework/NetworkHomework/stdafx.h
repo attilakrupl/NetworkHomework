@@ -9,6 +9,9 @@
 #include <iostream>
 #include <array>
 #include <vector>
+#include <thread>
+#include <mutex>
+#include <string>
 
 #ifdef _WIN64
     #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -20,6 +23,7 @@
 #endif // WIN64
 
 #include "base/defines/protocoldefines.h"
+#include "base/errors/protocolerrors.h"
 
 #include "types/asocket.h"
 

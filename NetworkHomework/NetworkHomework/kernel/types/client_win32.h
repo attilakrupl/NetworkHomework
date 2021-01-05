@@ -15,10 +15,8 @@ namespace nProtocol
         ~Client();
 
     public:
-        virtual void Connect()  override;
-        virtual void Send()     override;
-        virtual void Recieve()  override;
-        virtual void Shutdown() override;
-        virtual void Close()    override;
+        virtual eProtocolError Initialize() override;
+        virtual eProtocolError Deinitialize() override;
+        virtual eProtocolError Run() override;
     };
 }

@@ -9,36 +9,23 @@
 using namespace nProtocol;
 
 Client::Client()
-{
-
-}
+{}
 
 Client::~Client()
-{
+{}
 
+eProtocolError Client::Initialize()
+{
+    return eProtocolError::OK;
 }
 
-void Client::Connect()
+eProtocolError Client::Deinitialize()
 {
-
+    return eProtocolError::OK;
 }
 
-void Client::Send()
+eProtocolError Client::Run()
 {
-
+    return eProtocolError::OK;
 }
 
-void Client::Recieve()
-{
-
-}
-
-void Client::Shutdown()
-{
-
-}
-
-void Client::Close()
-{
-
-}

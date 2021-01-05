@@ -8,88 +8,160 @@
 
 using namespace nProtocol;
 
-Server::Server()
-    : mNumberOfConnections( 0 )
+void Server::Accept()
 {
-    mTCPEndpointAddress.sin_family           = AF_INET;
-    mTCPEndpointAddress.sin_port             = htons( 54000 );
-    mTCPEndpointAddress.sin_addr.S_un.S_addr = INADDR_ANY;
-    mTCPSocket                               = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-    if ( mTCPSocket == INVALID_SOCKET )
-    {
-        std::cout << "ERROR - TCP Server Socket creation failed! Error code: " << WSAGetLastError() << std::endl;
-    }
-    std::cout << "SUCCESS - Server socket creation succeeded!" << std::endl;
-}
+    SocketAddressIn_np lClient;
+    int lClientSize = sizeof( lClient );
 
-Server::~Server()
-{}
+    char lHost[NI_MAXHOST];
+    char lService[NI_MAXSERV];
 
-void Server::Bind()
-{
-    const int lBindResult = bind( mTCPSocket, (SocketAddress_np*)&mTCPEndpointAddress, sizeof( mTCPEndpointAddress ) );
-    if ( lBindResult == SOCKET_ERROR )
-    {
-        std::cout << "ERROR - Binding failed! Error code: " << WSAGetLastError() << std::endl;
-    }
-    std::cout << "SUCCESS - Binding succeeded!" << std::endl;
-}
+    ZeroMemory( lHost, NI_MAXHOST );
+    ZeroMemory( lService, NI_MAXSERV );
 
-void Server::Listen()
-{
-    const int lListenResult = listen( mTCPSocket, kNumerOfConnections );
-    if ( lListenResult == SOCKET_ERROR )
-    {
-        std::cout << "ERROR - Start listening failed! Error code: " << WSAGetLastError() << std::endl;
-    }
-    std::cout << "SUCCESS - Listening started successfully!" << std::endl;
-}
-
-void Server::Accept( SocketAddress_np* aTCPClientAddress, int* aTCPClientAddressLength )
-{
-    Socket_np lAcceptedSocket = accept( mTCPSocket, aTCPClientAddress, aTCPClientAddressLength );
+    Socket_np lAcceptedSocket = accept( mTCPSocket, (sockaddr*)&lClient, &lClientSize );
     if ( lAcceptedSocket == INVALID_SOCKET )
     {
         std::cout << "ERROR - Accepting client connection failed! Error code: " << WSAGetLastError() << std::endl;
+        return;
     }
-    std::cout << "SUCCESS - Accepted client connection successfully!" << std::endl;
-    mNumberOfConnections++;
+
+    if ( getnameinfo( (sockaddr*)&lClient, sizeof( lClient ), lHost, NI_MAXHOST, lService, NI_MAXSERV, 0 ) == 0 )
+    {
+        std::cout << "SUCCESS - " << lHost << " connected on port " << lService << std::endl;
+    }
+    else
+    {
+        inet_ntop( AF_INET, &lClient.sin_addr, lHost, NI_MAXHOST );
+        std::cout << "SUCCESS - " << lHost << " connected on port " << ntohs( lClient.sin_port ) << std::endl;
+    }
+
+    std::cout << "SUCCESS - Accepted client connection successfully! Socket: " << lAcceptedSocket << std::endl;
+
+    mMutex.lock();
     mNodeContainer.push_back( lAcceptedSocket );
+    mMutex.unlock();
 }
 
-void Server::Send()
+void Server::Send( const Socket_np& aSocket )
 {
     if ( mSendBufferSize != 0 )
     {
         int lSendResult;
-        for ( Socket_np& lSocket : mNodeContainer )
-        {
-            if ( lSocket == NULL )
-            {
-                break;
-            }
 
-            lSendResult = send( lSocket, mSendBuffer, mSendBufferSize, 0 );
-            if ( lSendResult == SOCKET_ERROR )
-            {
-                std::cout << "ERROR - Sending failed! Error code: " << WSAGetLastError() << std::endl;
-            }
-            std::cout << "SUCCESS - Sending to  successfully!" << std::endl;
+        if ( aSocket == NULL )
+        {
+            return;
         }
+
+        lSendResult = send( aSocket, mSendBuffer, mSendBufferSize, 0 );
+        if ( lSendResult == SOCKET_ERROR )
+        {
+            std::cout << "ERROR - Sending failed! Socket: " << aSocket << " Error code: " << WSAGetLastError() << std::endl;
+            return;
+        }
+        std::cout << "SUCCESS - Sending to socket successful! Socket: " << aSocket << " Send result: " << lSendResult << std::endl;
     }
 }
 
 void Server::Recieve()
 {
+    ConnectionArray lConnectionToRemove = {};
 
+    mMutex.lock();
+    for ( const Socket_np& lSocket : mNodeContainer )
+    {
+        if ( lSocket == NULL )
+        {
+            break;
+        }
+
+        ZeroMemory( mRecieveBuffer, kRecieveBufferSize );
+        
+        int lBytesRecieved = recv( lSocket, mRecieveBuffer, 4096, 0 );
+
+        if ( lBytesRecieved == SOCKET_ERROR )
+        {
+            std::cout << "ERROR - Error in recv(). Quitting! Socket: " << lSocket << std::endl;
+            lConnectionToRemove.push_back( lSocket );
+            continue;
+        }
+        if ( lBytesRecieved == 0 )
+        {
+            std::cout << "ERROR - Client disconnected. Socket: " << lSocket << std::endl;
+            lConnectionToRemove.push_back( lSocket );
+            continue;
+        }
+        std::cout << "RECIEVING - Received the following size: " << lBytesRecieved << std::endl;
+        std::cout << "RECIEVING - Received the following message: " << mRecieveBuffer << std::endl;
+
+        Send( lSocket );
+    }
+
+    for ( const Socket_np& lSockToErase : lConnectionToRemove )
+    {
+        std::cout << "REMOVING - Removing dead socket connection: " << lSockToErase << std::endl;
+        mNodeContainer.erase( std::remove( mNodeContainer.begin(), mNodeContainer.end(), lSockToErase ), mNodeContainer.end() );
+    }
+    mMutex.unlock();
+
+    lConnectionToRemove.clear();
 }
 
-void Server::Shutdown()
-{
+Server::Server()
+    : mShouldRunning( true )
+{}
 
+Server::~Server()
+{
+    Deinitialize();
 }
 
-void Server::Close()
+eProtocolError Server::Initialize()
 {
+    mTCPEndpointAddress.sin_family           = kSocketInFamily;
+    mTCPEndpointAddress.sin_port             = htons( kSocketInPort );
+    mTCPEndpointAddress.sin_addr.S_un.S_addr = kSocketInAdderss;
 
+    mTCPSocket = socket( kSocketInFamily, kServerSocketType, kServerSocketProtocol );
+    if ( mTCPSocket == INVALID_SOCKET )
+    {
+        PROTO_ERROR( eProtocolError::SocketCreationFailed, "TCP server socket creation failed!", WSAGetLastError() );
+        return eProtocolError::SocketCreationFailed;
+    }
+    PROTO_INFO( "Server socket creation succeeded!" );
+
+    const int lBindResult = bind( mTCPSocket, (SocketAddress_np*)&mTCPEndpointAddress, sizeof( mTCPEndpointAddress ) );
+    if ( lBindResult == SOCKET_ERROR )
+    {
+        PROTO_ERROR( eProtocolError::SocketBindingFailed, "TCP server socket binding failed!!", WSAGetLastError() );
+        return eProtocolError::SocketBindingFailed;
+    }
+    PROTO_INFO( "Server socket binding succeeded!" );
+
+    return eProtocolError::OK;
+}
+
+eProtocolError Server::Deinitialize()
+{
+    closesocket( mTCPSocket );
+    WSACleanup();
+
+    return eProtocolError::OK;
+}
+
+eProtocolError Server::Run()
+{
+    const int lListenResult = listen( mTCPSocket, kNumerOfConnections );
+    if ( lListenResult == SOCKET_ERROR )
+    {
+        PROTO_ERROR( eProtocolError::SocketListeningFailed, "Start listening failed!", WSAGetLastError() );
+        return eProtocolError::SocketListeningFailed;
+    }
+    PROTO_INFO("Listening started successfully!");
+
+    Accept();
+    Recieve();
+
+    return eProtocolError::OK;
 }
