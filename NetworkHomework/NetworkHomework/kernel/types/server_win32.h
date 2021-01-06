@@ -15,8 +15,6 @@ namespace nProtocol
 
     private:
         ConnectionArray mNodeContainer;                                                  /*! The node/connection container                      */
-        bool            mShouldRunning;                                                  /*! The threaded services should be running or not     */
-        std::mutex      mMutex;                                                          /*! The mutex used to protect the container            */
 
     private:
         char mRecieveBuffer[kSendBufferSize];                                            /*! The reciever buffer buffer                         */

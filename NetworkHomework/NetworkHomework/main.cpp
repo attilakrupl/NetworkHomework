@@ -5,6 +5,7 @@
  * 
  * \brief based on this tutorial: https://www.youtube.com/watch?v=TP5Q0cs6uNo&ab_channel=ASystemProgrammingChannel
  * \brief and this:               https://www.youtube.com/watch?v=WDn-htpBlnU&ab_channel=SloanKelly
+ * \brief design pattern:         https://vichargrave.github.io/programming/tcp-ip-network-programming-design-patterns-in-cpp/  
  * 
  */
 
@@ -110,20 +111,12 @@ int main( int argc, char** argv )
         return -1;
     }
 
-    bool lHasBeenStarted = false;
+    bool lShouldBeRunning = true;
 
-    while( true )
+    while ( lShouldBeRunning )
     {
-        if ( !lHasBeenStarted )
-        {
-            lServerInstance.Run();
-            lHasBeenStarted = true;
-        }
-
-        Sleep(50);
+        lServerInstance.Run();
     }
-
-
 
     return 0;
 }

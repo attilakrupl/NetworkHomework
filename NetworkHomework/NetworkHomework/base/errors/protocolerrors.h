@@ -15,6 +15,8 @@ namespace nProtocol
         , SocketCreationFailed = 66000
         , SocketBindingFailed
         , SocketListeningFailed
+        , CantMakeClientSocketNonBlocking
+        , ReceivingFailed
         , WSAStartupError
         , Last
     };
