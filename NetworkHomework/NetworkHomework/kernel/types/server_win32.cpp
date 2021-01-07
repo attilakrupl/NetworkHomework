@@ -90,13 +90,16 @@ void Server::Recieve()
         {
             break;
         }
+        
+        struct timeval lTimeout;
+        struct fd_set lFds;
 
-        WSAPOLLFD lListeningSocketFD = {};
-        lListeningSocketFD.fd = lSocket,
-        lListeningSocketFD.events = POLLRDNORM;
-        lListeningSocketFD.revents = 0;
+        lTimeout.tv_sec = 0;
+        lTimeout.tv_usec = 10000;
 
-        if ( WSAPoll( &lListeningSocketFD, 1, 1 ) >= 0 )
+        FD_ZERO( &lFds );
+        FD_SET( lSocket, &lFds );
+        if ( select( 0, &lFds, 0, 0, &lTimeout ) > 0 )
         {
             ZeroMemory( mRecieveBuffer, kRecieveBufferSize );
         
@@ -104,13 +107,14 @@ void Server::Recieve()
 
             if ( lBytesRecieved == SOCKET_ERROR )
             {
-                //PROTO_ERROR( nProtocol::eProtocolError::ReceivingFailed, "Error in receiving process on socket", WSAGetLastError() );
-                //lConnectionToRemove.push_back( lSocket );
+                PROTO_ERROR( nProtocol::eProtocolError::ReceivingFailed, "Error in receiving process on socket", WSAGetLastError() );
+                lConnectionToRemove.push_back( lSocket );
                 continue;
             }
             if ( lBytesRecieved == 0 )
             {
                 std::cout << "ERROR - Client disconnected. Socket: " << lSocket << std::endl;
+                closesocket( lSocket );
                 lConnectionToRemove.push_back( lSocket );
                 continue;
             }
@@ -132,7 +136,6 @@ void Server::Recieve()
 }
 
 Server::Server()
-    : mShouldRunning( true )
 {}
 
 Server::~Server()
@@ -175,6 +178,10 @@ eProtocolError Server::Initialize()
 
 eProtocolError Server::Deinitialize()
 {
+    for ( auto lSocket : mNodeContainer )
+    {
+        closesocket( lSocket );
+    }
     closesocket( mTCPSocket );
     WSACleanup();
 
