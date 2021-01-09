@@ -33,3 +33,18 @@ int main( int argc, char** argv )
 
     return 0;
 }
+
+//int main( void )
+//{
+//    cout << "sizeof( long double       ): " << sizeof( long double       ) << endl;
+//    cout << "sizeof( double            ): " << sizeof( double            ) << endl;
+//    cout << "sizeof( float             ): " << sizeof( float             ) << endl;
+//    cout << "sizeof( unsigned long int ): " << sizeof( unsigned long int ) << endl;
+//    cout << "sizeof( long int          ): " << sizeof( long int          ) << endl;
+//    cout << "sizeof( unsigned int      ): " << sizeof( unsigned int      ) << endl;
+//    cout << "sizeof( int               ): " << sizeof( int               ) << endl;
+//    cout << "sizeof( char              ): " << sizeof( char              ) << endl;
+//    cout << "sizeof( bool              ): " << sizeof( bool              ) << endl;
+//
+//    return 0;
+//}

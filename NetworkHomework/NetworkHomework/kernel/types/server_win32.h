@@ -18,8 +18,7 @@ namespace nProtocol
 
     private:
         char mRecieveBuffer[kSendBufferSize];                                            /*! The reciever buffer buffer                         */
-        char mSendBuffer[kSendBufferSize] = "Message back";                              /*! Dummy send buffer                                  */
-        int  mSendBufferSize              = (int)strlen( mSendBuffer ) + 1;              /*! Dummy send buffer size                             */
+        char mSendBuffer[kSendBufferSize];                                               /*! Dummy send buffer                                  */
 
     private:
         void Accept();

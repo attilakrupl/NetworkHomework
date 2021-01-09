@@ -61,7 +61,8 @@ void Server::Accept()
 
 void Server::Send( const Socket_np& aSocket )
 {
-    if ( mSendBufferSize != 0 )
+    const int lSendBufferSize = (int)sizeof( mSendBuffer ) + 1;
+    if ( lSendBufferSize != 0 )
     {
         int lSendResult;
 
@@ -136,6 +137,8 @@ void Server::Recieve()
 }
 
 Server::Server()
+    : mRecieveBuffer( ""             )
+    , mSendBuffer   ( "Message back" )
 {}
 
 Server::~Server()
