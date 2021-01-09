@@ -10,14 +10,16 @@ using namespace nProtocol;
 
 void Server::Accept()
 {
-    WSAPOLLFD lListeningSocketFD = {};
-    lListeningSocketFD.fd        = mTCPSocket,
-    lListeningSocketFD.events    = POLLRDNORM ;
-    lListeningSocketFD.revents   = 0;
+    WSAPOLLFD lListeningSocketFD         = {};
+              lListeningSocketFD.fd      = mTCPSocket;
+              lListeningSocketFD.events  = kServerReadPollFlag;
+              lListeningSocketFD.revents = kServerPollREvents;
+    const int lNumberOfSocketsInArray    = kNumberOfServerSockets;
+    const int lTimeOut                   = kPollTimeoutTimeOutMilS;
     
-    if ( WSAPoll(&lListeningSocketFD, 1, 1 ) >= 0 )
+    if ( WSAPoll(&lListeningSocketFD, lNumberOfSocketsInArray, lTimeOut ) >= 0 )
     {
-        if ( lListeningSocketFD.revents & POLLRDNORM )
+        if ( lListeningSocketFD.revents & kServerReadPollFlag )
         {
             SocketAddressIn_np lClient;
             int lClientSize = sizeof( lClient );
@@ -48,7 +50,7 @@ void Server::Accept()
             std::cout << "SUCCESS - Accepted client connection successfully! Socket: " << lAcceptedSocket << std::endl;
             
                   unsigned long lNonBlocking = 1;
-            const int           lResult = ioctlsocket( lAcceptedSocket, FIONBIO, &lNonBlocking );
+            const int           lResult      = ioctlsocket( lAcceptedSocket, FIONBIO, &lNonBlocking );
             if ( lResult == SOCKET_ERROR )
             {
                 PROTO_ERROR( nProtocol::eProtocolError::CantMakeClientSocketNonBlocking, "Can't make client socket non blocking!", WSAGetLastError() );
@@ -71,7 +73,7 @@ void Server::Send( const Socket_np& aSocket )
             return;
         }
 
-        lSendResult = send( aSocket, mRecieveBuffer, sizeof(mRecieveBuffer), 0 );
+        lSendResult = send( aSocket, mReceiveBuffer, sizeof(mReceiveBuffer), 0 );
         if ( lSendResult == SOCKET_ERROR )
         {
             std::cout << "ERROR - Sending failed! Socket: " << aSocket << " Error code: " << WSAGetLastError() << std::endl;
@@ -95,16 +97,16 @@ void Server::Recieve()
         struct timeval lTimeout;
         struct fd_set lFds;
 
-        lTimeout.tv_sec = 0;
-        lTimeout.tv_usec = 10000;
+        lTimeout.tv_sec = kPollTimeoutTimeOutSec;
+        lTimeout.tv_usec = kPollTimeoutTimeOutMicS;
 
         FD_ZERO( &lFds );
         FD_SET( lSocket, &lFds );
         if ( select( 0, &lFds, 0, 0, &lTimeout ) > 0 )
         {
-            ZeroMemory( mRecieveBuffer, kRecieveBufferSize );
+            ZeroMemory( mReceiveBuffer, kReceiveBufferSize );
         
-            int lBytesRecieved = recv( lSocket, mRecieveBuffer, 4096, 0 );
+            int lBytesRecieved = recv( lSocket, mReceiveBuffer, kReceiveBufferSize, 0 );
 
             if ( lBytesRecieved == SOCKET_ERROR )
             {
@@ -121,7 +123,7 @@ void Server::Recieve()
             }
 
             std::cout << "RECIEVING - Received the following size: " << lBytesRecieved << std::endl;
-            std::cout << "RECIEVING - Received the following message: " << mRecieveBuffer << std::endl;
+            std::cout << "RECIEVING - Received the following message: " << mReceiveBuffer << std::endl;
 
             Send( lSocket );
         }
@@ -137,8 +139,6 @@ void Server::Recieve()
 }
 
 Server::Server()
-    : mRecieveBuffer( ""             )
-    , mSendBuffer   ( "Message back" )
 {}
 
 Server::~Server()

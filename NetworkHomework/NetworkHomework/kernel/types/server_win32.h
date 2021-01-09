@@ -17,8 +17,8 @@ namespace nProtocol
         ConnectionArray mNodeContainer;                                                  /*! The node/connection container                      */
 
     private:
-        char mRecieveBuffer[kSendBufferSize];                                            /*! The reciever buffer buffer                         */
-        char mSendBuffer[kSendBufferSize];                                               /*! Dummy send buffer                                  */
+        char mReceiveBuffer[kReceiveBufferSize] = "";                                    /*! The receiver buffer buffer                         */
+        char mSendBuffer[kSendBufferSize] = "MessageBack";                               /*! Dummy send buffer                                  */
 
     private:
         void Accept();

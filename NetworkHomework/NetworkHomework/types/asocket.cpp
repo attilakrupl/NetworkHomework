@@ -9,6 +9,10 @@
 using namespace nProtocol;
 
 aSocket::aSocket()
+    : mWinSocketData()
+    , mTCPEndpointAddress()
+    , mTCPClientAddress()
+    , mTCPSocket( 0 )
 {
     const int lWSAStartupResult = WSAStartup( MAKEWORD( 2, 2 ), &mWinSocketData );
     if ( lWSAStartupResult )
